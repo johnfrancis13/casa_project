@@ -61,6 +61,6 @@ world_shp %>% tm_shape() +
   tm_layout(legend.outside = TRUE, legend.title.size = 0.8, 
             legend.text.size = 0.7,
             legend.title.fontface = 2,
-            main.title = "WorldWide Gender Inequality Index")
+            main.title = "World Gender Inequality Index 2019")
 
   
