@@ -27,13 +27,22 @@ library("dplyr")
 library("stringr")
 
 ### Homework
+# Read in the gender ineuqality data
 ggi <- read.csv("Gender Inequality Index (GII).csv",stringsAsFactors = F,header = T,skip = 5)
+
+# clean up columns and make numeric
 ggi <- ggi %>% select(-contains("X."),-X) %>% mutate(across(starts_with("X"),as.numeric))
 
+# trim up the country names for merging
 ggi$Country <- str_trim(ggi$Country,side = "both")
+
+# Read in the shapefile for the world
 world_shp <- st_read("World_Countries_(Generalized)/World_Countries__Generalized_.shp") %>% rename(Country=COUNTRY)
+
+# trim up country names for merging
 world_shp$Country <- str_trim(world_shp$Country,side = "both")
 
+# join the two files
 world_shp <- left_join(world_shp,ggi, by="Country")
 
 # look at geometry
