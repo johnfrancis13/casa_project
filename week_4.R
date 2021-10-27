@@ -17,3 +17,38 @@ library("gitcreds")
 
 ### Step 4 
 # now you can start push/pull/commit!
+
+
+# load in dependencies
+library("sf")
+library("tmap")
+library("tmaptools")
+library("dplyr")
+library("stringr")
+
+### Homework
+ggi <- read.csv("Gender Inequality Index (GII).csv",stringsAsFactors = F,header = T,skip = 5)
+ggi <- ggi %>% select(-contains("X."),-X) %>% mutate(across(starts_with("X"),as.numeric))
+
+ggi$Country <- str_trim(ggi$Country,side = "both")
+world_shp <- st_read("World_Countries_(Generalized)/World_Countries__Generalized_.shp") %>% rename(Country=COUNTRY)
+world_shp$Country <- str_trim(world_shp$Country,side = "both")
+
+world_shp <- left_join(world_shp,ggi, by="Country")
+
+# look at geometry
+world_shp %>% st_geometry() %>% plot()
+
+# Make a basic Map
+world_shp %>% tm_shape() +
+  tm_polygons("X2019",palette="Greens", style = "quantile", title="Global Gender \nInequality Quantiles") +
+  tm_shape(world_shp) +
+  tm_borders("black") +
+  tm_scale_bar(position=c("RIGHT", "BOTTOM"),text.size = .7) +
+  tm_compass(type="arrow", position=c("RIGHT","TOP"),size = 1) +
+  tm_layout(legend.outside = TRUE, legend.title.size = 0.8, 
+            legend.text.size = 0.7,
+            legend.title.fontface = 2,
+            main.title = "WorldWide Gender Inequality Index")
+
+  
