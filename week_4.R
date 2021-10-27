@@ -8,7 +8,7 @@ library("gitcreds")
 
 ### Step 1 create a github token 
 # create_github_token()
-# token: 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
+
 
 ### Step 2
 # gitcreds_set()
