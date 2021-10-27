@@ -3,6 +3,9 @@ library("gitcreds")
 
 ### Process for setting up a new repo and using github
 
+### Step 0
+# Make an R project
+
 ### Step 1 create a github token 
 # create_github_token()
 # token: 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
