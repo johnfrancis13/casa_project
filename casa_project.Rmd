@@ -1,0 +1,73 @@
+---
+title: "casa_project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library("sf")
+library("tmap")
+library("tmaptools")
+library("dplyr")
+library("stringr")
+library(janitor)
+library(tidyverse)
+library(here)
+library(countrycode)
+```
+
+```{r}
+# Read in the gender inequality data
+ggi <- read.csv("Gender Inequality Index (GII).csv",stringsAsFactors = F,header = T,skip = 5)
+
+# clean up columns and make numeric
+ggi <- ggi %>% select(-contains("X."),-X) %>% mutate(across(starts_with("X"),as.numeric))
+
+# trim up the country names for merging
+ggi$Country <- str_trim(ggi$Country,side = "both")
+
+# Read in the shapefile for the world
+world_shp <- st_read("World_Countries_(Generalized)/World_Countries__Generalized_.shp") %>% rename(Country=COUNTRY)
+
+# trim up country names for merging
+world_shp$Country <- str_trim(world_shp$Country,side = "both")
+
+# join the two files
+world_shp <- left_join(world_shp,ggi, by="Country")
+
+# look at geometry
+world_shp %>% st_geometry() %>% plot()
+```
+
+```{r}
+world_shp %>% tm_shape() +
+  tm_polygons("X2019",palette="Greens", style = "quantile", title="Global Gender \nInequality Quantiles") +
+  tm_shape(world_shp) +
+  tm_borders("black") +
+  tm_scale_bar(position=c("RIGHT", "BOTTOM"),text.size = .7) +
+  tm_compass(type="arrow", position=c("RIGHT","TOP"),size = 1) +
+  tm_layout(legend.outside = TRUE, legend.title.size = 0.8, 
+            legend.text.size = 0.7,
+            legend.title.fontface = 2,
+            main.title = "World Gender Inequality Index 2019")
+```
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
